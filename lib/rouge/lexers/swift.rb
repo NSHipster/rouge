@@ -83,7 +83,7 @@ module Rouge
         rule %r{[\d]+(?:_\d+)*}, Num::Integer
 
         rule /@#{id}(\([^)]+\))?/, Keyword::Declaration
-
+        
         rule /(private|internal)(\([ ]*)(\w+)([ ]*\))/ do |m|
           if m[3] == 'set'
             token Keyword::Declaration
@@ -117,7 +117,11 @@ module Rouge
           push :tuple
         end
 
-        rule /(?!\b(if|while|for|private|internal|unowned|switch|case)\b)\b#{id}(?=(\?|!)?\s*[(])/ do |m|
+        rule /(case)\b(.*)?(:|$)/ do
+          groups Keyword, Text, Punctuation
+        end
+
+        rule /(?!\b(private|fileprivate|internal|public|unowned)\b)\b#{id}(?=(\?|!)?\s*[(])/ do |m|
           if m[0] =~ /^[[:upper:]]/
             token Keyword::Type
           else
