@@ -36,7 +36,7 @@ module Rouge
 
       # beginning of line
       state :bol do
-        rule /#.*/, Comment::Preproc
+        rule /#[^"]+/, Comment::Preproc
 
         mixin :inline_whitespace
 
@@ -71,7 +71,9 @@ module Rouge
 
         rule %r{[()\[\]{}:;,?\\]}, Punctuation
         rule %r([-/=+*%<>!&|^.~]+), Operator
-        rule /@?"/, Str, :dq
+        rule /#"/, Str, :raw_string_literal
+        rule /"""/, Str, :multiline_string_literal
+        rule /@?"/, Str, :string_literal
         rule /'(\\.|.)'/, Str::Char
         rule /(\d+\*|\d*\.\d+)(e[+-]?[0-9]+)?/i, Num::Float
         rule /\d+e[+-]?[0-9]+/i, Num::Float
@@ -160,14 +162,28 @@ module Rouge
         mixin :inline_whitespace
       end
 
-      state :dq do
+      state :string do
         rule /\\[\\0tnr'"]/, Str::Escape
         rule /\\[(]/, Str::Escape, :interp
         rule /\\u\{\h{1,8}\}/, Str::Escape
         rule /[^\\"]+/, Str
-        rule /"""/, Str, :pop!
+      end
+
+      state :string_literal do
+        mixin :string
         rule /"/, Str, :pop!
       end
+
+      state :multiline_string_literal do
+        mixin :string
+        rule /"""/, Str, :pop!
+      end
+
+      state :raw_string_literal do
+        rule /.(?!#+)/, Str
+        rule /\\#[(]/, Str::Escape, :interp
+        rule /"#/, Str, :pop!
+    end
 
       state :interp do
         rule /[(]/, Punctuation, :interp_inner
