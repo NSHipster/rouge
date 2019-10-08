@@ -36,7 +36,7 @@ module Rouge
 
       # beginning of line
       state :bol do
-        rule /#[^"]+/, Comment::Preproc
+        rule /#[^"].+$/, Comment::Preproc
 
         mixin :inline_whitespace
 
@@ -85,7 +85,7 @@ module Rouge
         rule %r{[\d]+(?:_\d+)*}, Num::Integer
 
         rule /@#{id}(\([^)]+\))?/, Keyword::Declaration
-        
+
         rule /(private|internal)(\([ ]*)(\w+)([ ]*\))/ do |m|
           if m[3] == 'set'
             token Keyword::Declaration
