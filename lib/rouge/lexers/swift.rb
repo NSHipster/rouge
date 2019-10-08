@@ -101,14 +101,16 @@ module Rouge
             groups Keyword::Declaration, Error, Keyword::Declaration
           end
         end
-        
+
         rule /#available\([^)]+\)/, Keyword::Declaration
-        
+
         rule /(#(?:selector|keyPath)\()([^)]+?(?:[(].*?[)])?)(\))/ do
           groups Keyword::Declaration, Name::Function, Keyword::Declaration
         end
-        
+
         rule /#(line|file|column|function|dsohandle)/, Keyword::Declaration
+
+        rule %r/\\\.(#{id})/, Keyword::Type
 
         rule /(let|var)\b(\s*)(#{id})/ do
           groups Keyword, Text, Name::Variable
