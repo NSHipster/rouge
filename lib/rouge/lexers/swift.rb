@@ -67,8 +67,10 @@ module Rouge
 
       state :root do
         mixin :whitespace
-        
+
         rule %r/\$(([1-9]\d*)?\d)/, Name::Variable
+
+        rule %r/<#.*?#>/, Text
 
         rule %r{[()\[\]{}:;,?\\]}, Punctuation
         rule %r([-/=+*%<>!&|^.~]+), Operator
