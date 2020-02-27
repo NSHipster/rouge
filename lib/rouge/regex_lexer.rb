@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*- #
 # frozen_string_literal: true
 
+class Class
+    def after_inherited(child, &block)
+        TracePoint.trace(:end) do |t|
+            if child == t.self
+                block.call child
+                t.disable
+            end
+        end
+    end
+end
+
 module Rouge
   # @abstract
   # A stateful lexer that uses sets of regular expressions to
@@ -486,6 +497,22 @@ module Rouge
     # Check if `state_name` is the state on top of the state stack.
     def state?(state_name)
       state_name.to_sym == state.name
+    end
+
+    def self.inherited(subclass)
+        after_inherited subclass do
+            subclass.instance_eval do
+                [:bol, :root].each do |state|
+                    append state do
+                        rule %r/<#[^#]*?#>/, Text
+                    end
+                rescue
+                    next
+                end
+            end
+        end
+
+        super
     end
 
   private
