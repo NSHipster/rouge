@@ -502,7 +502,7 @@ module Rouge
     def self.inherited(subclass)
         after_inherited subclass do
             subclass.instance_eval do
-                [:bol, :root].each do |state|
+                [:root].each do |state|
                     append state do
                         rule %r/<#[^#]*?#>/, Text
                     end
